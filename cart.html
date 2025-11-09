@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang='lt'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Produktų katalogas</title>
+<link rel='stylesheet' href='assets/style.css'>
+</head>
+<body>
+<header>
+  <div class='topbar'>
+    <div class='left'>
+      <div class='hamburger' id='hamburger'>☰</div>
+      <div class='brand'>Produktų katalogas</div>
+    </div>
+    <div class='right'>
+      <a id='cart-icon' href='cart.html' class='cart-link'>🛍️<span id='cart-count'>0</span></a>
+    </div>
+  </div>
+  <nav class='nav' id='nav'><a href="index.html">Pradžia</a> <a href="aromo-.html">Aromos</a> <a href="baze-.html">Bazės</a> <a href="buteliukai.html">Buteliukai</a> <a href="coilaiirkap-ule-.html">Coilai ir kapsulės</a> <a href="-hotai.html">Shotai</a> <a href="-ky-ciai.html">Skysčiai</a> <a href="irangairrinkiniai.html">Įranga ir rinkiniai</a></nav>
+</header>
+<div class='container'>
+  
+    <h2>Krepšelis</h2>
+    <div id='cart-items' class='cart-grid'></div>
+    <div class='total'>Iš viso: <span id='total'>0.00 €</span></div>
+    <script>
+const cart=JSON.parse(localStorage.getItem('cart')||'{}');
+const cont=document.getElementById('cart-items');
+function render(){
+  cont.innerHTML='';
+  let total=0;
+  for(const [name,item] of Object.entries(cart)){
+    const qty=item.qty;
+    const price=parseFloat(item.price)||0;
+    const bulk=parseFloat(item.bulk)||0;
+    const final=(bulk&&qty>=10)?bulk:price;
+    const sum=final*qty;
+    total+=sum;
+    cont.innerHTML+=`
+      <div class='cart-item'>
+        <div class='cart-thumb'>${item.img?`<img src='${item.img}' alt='${name}'>`:''}</div>
+        <div class='cart-info'>
+          <h3>${name}</h3>
+          <p>Kaina: <strong>${final.toFixed(2)} €</strong></p>
+          <div class='cart-actions'>
+            <input type='number' value='${qty}' min='1' data-name='${name}' class='qty'>
+            <button class='remove' data-name='${name}'>✕</button>
+          </div>
+        </div>
+        <div class='cart-sum'><strong>${sum.toFixed(2)} €</strong></div>
+      </div>`;
+  }
+  document.getElementById('total').textContent=total.toFixed(2)+' €';
+  localStorage.setItem('cart',JSON.stringify(cart));
+  updateCartBadge();
+}
+cont.addEventListener('input',e=>{
+  if(e.target.classList.contains('qty')){
+    const n=e.target.dataset.name;
+    cart[n].qty=parseInt(e.target.value)||1;
+    render();
+  }
+});
+cont.addEventListener('click',e=>{
+  if(e.target.classList.contains('remove')){
+    delete cart[e.target.dataset.name];
+    render();
+  }
+});
+render();
+    </script>
+    
+  <div class='footer'>© Visos teisės saugomos</div>
+</div>
+<script src='assets/shop.js'></script>
+</body>
+</html>
